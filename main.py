@@ -1,6 +1,7 @@
 from pathlib import Path
 import re
 
+
 # Localiza a pasta onde o main.py está salvo
 pastaAtual = Path(__file__).parent
 caminhoArquivo1 = pastaAtual / "batman.txt"
@@ -11,62 +12,114 @@ with open(caminhoArquivo1, "r", encoding="utf-8") as arquivo:
 with open(caminhoArquivo2, "r", encoding="utf-8") as arquivo:
     stopwordsBruto = arquivo.read()
 
+
+def limparTexto(textoBruto):
+    textoLimpo = re.split(r"[,;.?!/\s ]+", textoBruto)
+    textoLimpo.pop(-1) #remove o valor vazio do final
+    return textoLimpo
+
+def removeStopwords(textoLimpo):
+    stopwordsMaiusculas = stopwordsBruto.title()
+    stopwordsBrutoConcatenado = stopwordsBruto + stopwordsMaiusculas
+    stopwords = re.split(r"[,;.?!/\s ]+", stopwordsBrutoConcatenado)
+
+    textoStopwords = []
+    textoLimpoDeStopwords = []
+    i=0
+    while(i<len(textoLimpo)):
+        bool = 0 #controle
+        for j in range(len(stopwords)):
+            if (textoLimpo[i]==stopwords[j]):
+                textoStopwords.append(textoLimpo[i])
+                bool = 1
+                break
+        if bool == 0:
+            textoLimpoDeStopwords.append(textoLimpo[i])
+        i+=1
+    return textoLimpoDeStopwords, textoStopwords
+
+def quantidadePalavras(texto):
+    quantidadePalavras = 0
+    for palavra in range(len(texto)):
+        quantidadePalavras+=1
+    return quantidadePalavras
+
+#def voltarAoMenu():
+    print("Voltar ao menu ?")
+    print("1-Sim")
+    print("2-Não")
+    voltar = 0
+    while (voltar!=1 and voltar !=2):
+        try:
+            voltar = int(input("Selecione uma opção: "))
+        except ValueError:
+            voltar = -1
+    if voltarAoMenu == 1:
+        return 0
+    else:
+        return 6
+
 def main ():
     #opções do Menu
-    print("-----Leitor PLN em Python-----")
-    print("1-Ler arquivo TXT e mostrar a quantidade de palavras")
-    print("2-Remover as stopwords e mostrar dados estatísticos")
-    #(2) palavrasOriginais, #stopwords, e #palavrasSemStopwords;")
-    print("3-Gerar e imprimir as palavras mais frequentes")
-    print("4-Gerar e imprimir os Hapaxes Legomenons (palavras de frequência única)")
-    print("5-Mostrar o gráfico com a Curva de Zipf e os cortes de Luhn.")
-
-    option = int(input("Selecione uma opção: "))
-    match option:
-        case 1:
-            quantidadePalavras=0
-            textoLimpo = re.split(r"[,;.?!/\s ]+", textoBruto)
-            textoLimpo.pop(-1) #remove o valor vazio do final
-            print(textoBruto)
-            for palavra in textoLimpo:
-                quantidadePalavras+=1
-            print(f"Quantidade de palavras: {quantidadePalavras}")
-        case 2:
-
-            stopwordsMaiusculas = stopwordsBruto.title()
-            stopwordsBrutoConcatenado = stopwordsBruto + stopwordsMaiusculas
-            stopwords = re.split(r"[,;.?!/\s ]+", stopwordsBrutoConcatenado)
-
-        #Originais     
-            #(textolimpo)
-        #Stopwords
-            textoStopwords = []
-        #Sem stopwords
-            textoLimpoStopwords = []
-            i=0
-            while(i<len(textoLimpo)):
-                bool = 0 #controle
-                for j in range(len(stopwords)):
-                    if (textoLimpo[i]==stopwords[j]):
-                        textoStopwords.append(textoLimpo[i])
-                        bool = 1
-                        break
-                if bool == 0:
-                    textoLimpoStopwords.append(textoLimpo[i])
-                i+=1
-            print("Dados Estatísticos do texto")
-            print("---------------------------")
-            print("Palavras originais:")
-            print(textoLimpo)
-            print("---------------------------")
-            print("Palavras sem Stopwords:")
-            print(textoLimpoStopwords)
-            print("---------------------------")
-            print("Stopwords no texto:")
-            print(textoStopwords)
-        case _:
-            print("")
-
+    option = 0
+    while(option!=6):
+        try:
+            print("-----Leitor PLN em Python-----")
+            print("1-Ler arquivo TXT e mostrar a quantidade de palavras")
+            print("2-Remover as stopwords e mostrar dados estatísticos")
+    
+            print("3-Gerar e imprimir as palavras mais frequentes")
+            print("4-Gerar e imprimir os Hapaxes Legomenons (palavras de frequência única)")
+            print("5-Mostrar o gráfico com a Curva de Zipf e os cortes de Luhn.")
+            print("6-Encerrar programa ?")
+            option = int(input("Selecione uma opção: "))
+            print("------------------------------")
+            match option:
+                case 1:
+                    textoLimpo = limparTexto(textoBruto)
+                    print("Texto original:")
+                    print(textoBruto)
+                    print("------------------------------")
+                    print(f"Quantidade de palavras no texto: {quantidadePalavras(textoLimpo)}")
+                    print("------------------------------")
+                case 2:
+                    try:
+                        textoLimpoDeStopwords, textoStopwords = removeStopwords(textoLimpo)
+                        #print("------------------------------")
+                        print("Dados Estatísticos do texto")
+                        print("------------------------------")
+                        print("Palavras originais:")
+                        print(textoLimpo)
+                        print(f"Quantidade de palavras originais: {quantidadePalavras(textoLimpo)}")
+                        print("------------------------------")
+                        print("Palavras sem Stopwords:")
+                        print(textoLimpoDeStopwords)
+                        print(f"Quantidade de palavras (sem stopwords): {quantidadePalavras(textoLimpoDeStopwords)}")
+                        print("------------------------------")
+                        print("Stopwords no texto:")
+                        print(textoStopwords)
+                        print(f"Quantidade de stopwords: {quantidadePalavras(textoStopwords)}")
+                        print("------------------------------")
+                    except UnboundLocalError:
+                        print("Realize primeiro a leitura do arquivo TXT para ter acesso aos dados!")
+                        print("------------------------------")
+                case 3:
+                    #Gerar e imprimir as palavras mais frequentes
+                    print("")
+                case 4:
+                    #Gerar e imprimir os Hapaxes Legomenons (palavras de frequência única)"
+                    print("")
+                case 5:
+                    print("")
+                case 6:
+                    print("Programa encerrado com sucesso!")
+                case _:
+                    print("------------------------------")
+                    print("Digite um valor válido!!!")
+                    print("------------------------------")
+                
+        except ValueError:
+            option = -1
 
 # Método main
 if __name__=='__main__':
