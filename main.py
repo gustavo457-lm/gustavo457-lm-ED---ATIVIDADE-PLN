@@ -44,17 +44,13 @@ def frequenciaComPalavrasSemRepetir(textoLimpoDeStopwords):
             palavras_sem_repetir.append(palavra_atual)
             Frequencias.append(textoLimpoDeStopwords.count(palavra_atual))
     return Frequencias, palavras_sem_repetir
-def Moda(textoLimpoDeStopwords):
-    Frequencias, palavras_sem_repetir = frequenciaComPalavrasSemRepetir(textoLimpoDeStopwords)
+def maiorF(textoLimpoDeStopwords):
+    Frequencias, p = frequenciaComPalavrasSemRepetir(textoLimpoDeStopwords)
     maiorFrequencia = 1
-    moda = []
     for i in range(len(Frequencias)):
         if Frequencias[i] > maiorFrequencia:
             maiorFrequencia = Frequencias[i]
-    for i in range(len(Frequencias)):
-        if Frequencias[i] == maiorFrequencia:
-            moda.append(palavras_sem_repetir[i])
-    return moda, maiorFrequencia
+    return maiorFrequencia
 def HapaxesLegomenons(textoLimpoDeStopwords):
     Frequencias, palavras_sem_repetir = frequenciaComPalavrasSemRepetir(textoLimpoDeStopwords)
     HapaxesLegomenons = []
@@ -86,7 +82,7 @@ def main ():
             print("1-Ler arquivo TXT e mostrar a quantidade de palavras")
             print("2-Remover as stopwords e mostrar dados estatísticos")
     
-            print("3-Gerar e imprimir as palavras mais frequentes")
+            print("3-Gerar e imprimir as top(k) palavras mais frequentes")
             print("4-Gerar e imprimir os Hapaxes Legomenons (palavras de frequência única)")
             print("5-Mostrar o gráfico com a Curva de Zipf e os cortes de Luhn.")
             print("6-Encerrar programa ?")
@@ -94,10 +90,21 @@ def main ():
             print("------------------------------")
             match option:
                 case 1:
+                    pasta = input("Digite o caminho da pasta: ")
                     arquivoTXT = input("Digite o nome do arquivo TXT: ")
                     # Localiza a pasta onde o main.py está salvo
                     pastaAtual = Path(__file__).parent
-                    caminhoArquivo1 = pastaAtual / arquivoTXT
+                    caminhoPasta = Path(pasta)
+                    caminhoArquivo1 = caminhoPasta / arquivoTXT
+                    if not caminhoPasta.is_dir():
+                        print("Pasta não encontrada!")
+                        print("------------------------------")
+                        continue
+
+                    if not caminhoArquivo1.is_file():
+                        print("Arquivo não encontrado!")
+                        print("------------------------------")
+                        continue
                     caminhoArquivo2 = pastaAtual / "stopwords-pt.txt"
 
                     with open(caminhoArquivo1, "r", encoding="utf-8") as arquivo:
@@ -136,9 +143,27 @@ def main ():
                 case 3:
                     #Gerar e imprimir as palavras mais frequentes
                     try:
-                        moda, maiorFrequencia = Moda(textoLimpoDeStopwords)
-                        print(f"Palavras mais frequentes: {moda}")
-                        print(f"Frequência: {maiorFrequencia}")
+                        k = int(input("Qual o top(k) que deseja saber? "))
+                        if k == 0:
+                            print("Não existe colocações 0")
+                        if k < 0:
+                            print("Não existe colocações negativas")
+                        maiorFrequencia = maiorF(textoLimpoDeStopwords)
+                        posicao = 1
+                        frequencia, palavras_sem_repetir = frequenciaComPalavrasSemRepetir(textoLimpoDeStopwords)
+                        print(f"TOP {k} palavras mais repetidas: ")
+                        while posicao <= k:
+                            if maiorFrequencia > 0:
+                                for i in range(len(frequencia)):
+                                    if frequencia[i] == maiorFrequencia:
+                                        print(f"{posicao}º posição: {palavras_sem_repetir[i]}")
+                                maiorFrequencia = maiorFrequencia - 1
+                            else: 
+                                for i in range(posicao, k+1):
+                                    print(f"{posicao}º: inexistente")
+                                    posicao = posicao + 1
+                            posicao = posicao + 1
+                            
                     except UnboundLocalError:
                         print("Primeiro retire as stopwords do texto!")
                         print("------------------------------")
