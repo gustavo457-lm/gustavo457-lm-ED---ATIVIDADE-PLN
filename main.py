@@ -1,24 +1,12 @@
 from pathlib import Path
 import re
 
-
-# Localiza a pasta onde o main.py está salvo
-pastaAtual = Path(__file__).parent
-caminhoArquivo1 = pastaAtual / "batman.txt"
-caminhoArquivo2 = pastaAtual / "stopwords-pt.txt"
-with open(caminhoArquivo1, "r", encoding="utf-8") as arquivo:
-    textoBruto = arquivo.read()
-
-with open(caminhoArquivo2, "r", encoding="utf-8") as arquivo:
-    stopwordsBruto = arquivo.read()
-
-
 def limparTexto(textoBruto):
     textoLimpo = re.split(r"[,;.?!/\s ]+", textoBruto)
     textoLimpo.pop(-1) #remove o valor vazio do final
     return textoLimpo
 
-def removeStopwords(textoLimpo):
+def removeStopwords(textoLimpo, stopwordsBruto):
     stopwordsMaiusculas = stopwordsBruto.title()
     stopwordsBrutoConcatenado = stopwordsBruto + stopwordsMaiusculas
     stopwords = re.split(r"[,;.?!/\s ]+", stopwordsBrutoConcatenado)
@@ -106,7 +94,19 @@ def main ():
             print("------------------------------")
             match option:
                 case 1:
-                    textoLimpo = limparTexto(textoBruto)
+                    arquivoTXT = input("Digite o nome do arquivo TXT: ")
+                    # Localiza a pasta onde o main.py está salvo
+                    pastaAtual = Path(__file__).parent
+                    caminhoArquivo1 = pastaAtual / arquivoTXT
+                    caminhoArquivo2 = pastaAtual / "stopwords-pt.txt"
+
+                    with open(caminhoArquivo1, "r", encoding="utf-8") as arquivo:
+                        textoBruto = arquivo.read()
+
+                    with open(caminhoArquivo2, "r", encoding="utf-8") as arquivo:
+                        stopwordsBruto = arquivo.read()
+                    textoLimpo= limparTexto(textoBruto)
+                    removeStopwords(textoLimpo, stopwordsBruto)
                     print("Texto original:")
                     print(textoBruto)
                     print("------------------------------")
@@ -114,7 +114,7 @@ def main ():
                     print("------------------------------")
                 case 2:
                     try:
-                        textoLimpoDeStopwords, textoStopwords = removeStopwords(textoLimpo)
+                        textoLimpoDeStopwords, textoStopwords = removeStopwords(textoLimpo, stopwordsBruto)
                         #print("------------------------------")
                         print("Dados Estatísticos do texto")
                         print("------------------------------")
@@ -138,7 +138,7 @@ def main ():
                     try:
                         moda, maiorFrequencia = Moda(textoLimpoDeStopwords)
                         print(f"Palavras mais frequentes: {moda}")
-                        print(f"Se repetiu: {maiorFrequencia} vezes")
+                        print(f"Frequência: {maiorFrequencia}")
                     except UnboundLocalError:
                         print("Primeiro retire as stopwords do texto!")
                         print("------------------------------")
@@ -147,6 +147,7 @@ def main ():
                     try:
                         unicaRepeticao = HapaxesLegomenons(textoLimpoDeStopwords)
                         print(f"Os Hapaxes Legomenons são: {unicaRepeticao}")
+                        print(f"Total de Hapaxes Legomenons: {len(unicaRepeticao)}")
                     except UnboundLocalError:
                         print("Primeiro retire as stopwords do texto!")
                         print("------------------------------")
