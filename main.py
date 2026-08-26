@@ -148,22 +148,28 @@ def main ():
                             print("Não existe colocações 0")
                         if k < 0:
                             print("Não existe colocações negativas")
-                        maiorFrequencia = maiorF(textoLimpoDeStopwords)
                         posicao = 1
                         frequencia, palavras_sem_repetir = frequenciaComPalavrasSemRepetir(textoLimpoDeStopwords)
                         print(f"TOP {k} palavras mais repetidas: ")
-                        while posicao <= k:
-                            if maiorFrequencia > 0:
-                                for i in range(len(frequencia)):
-                                    if frequencia[i] == maiorFrequencia:
-                                        print(f"{posicao}º posição: {palavras_sem_repetir[i]}")
-                                maiorFrequencia = maiorFrequencia - 1
-                            else: 
-                                for i in range(posicao, k+1):
-                                    print(f"{posicao}º: inexistente")
-                                    posicao = posicao + 1
-                            posicao = posicao + 1
-                            
+                        frequencia.sort(reverse=True)
+                        frequenciaSemRep = []
+                        frequenciaSemRep.append(frequencia[0])
+                        for i in range(1, len(frequencia)):
+                            if frequencia[i] not in frequenciaSemRep:
+                                frequenciaSemRep.append(frequencia[i])
+                        while posicao < k:
+                                for i in range(len(frequenciaSemRep)):
+                                    vezesPosicao = 0
+                                    for j in range(len(frequencia)):
+                                        if frequencia[j] == frequenciaSemRep[i]:
+                                            vezesPosicao+=1
+                                            print(f"{posicao}º posição: {palavras_sem_repetir[j]}")
+                                    posicao = posicao + vezesPosicao   
+                                tamanhoDefrequenciaSemRep = tamanhoDefrequenciaSemRep - 1
+                        if k > len(frequenciaSemRep):                        
+                            for i in range(posicao, k+1):
+                                print(f"{posicao}º: inexistente")
+                                posicao = posicao + 1
                     except UnboundLocalError:
                         print("Primeiro retire as stopwords do texto!")
                         print("------------------------------")
