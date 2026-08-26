@@ -43,7 +43,37 @@ def quantidadePalavras(texto):
     for palavra in range(len(texto)):
         quantidadePalavras+=1
     return quantidadePalavras
-
+def frequenciaComPalavrasSemRepetir(textoLimpoDeStopwords):
+    Frequencias = []
+    palavras_sem_repetir = []
+    for i in range(len(textoLimpoDeStopwords)):
+        if i == 0:
+            palavra_atual = textoLimpoDeStopwords[i]
+            palavras_sem_repetir.append(palavra_atual)
+            Frequencias.append(textoLimpoDeStopwords.count(palavra_atual))
+        if textoLimpoDeStopwords[i] not in palavras_sem_repetir:
+            palavra_atual = textoLimpoDeStopwords[i]
+            palavras_sem_repetir.append(palavra_atual)
+            Frequencias.append(textoLimpoDeStopwords.count(palavra_atual))
+    return Frequencias, palavras_sem_repetir
+def Moda(textoLimpoDeStopwords):
+    Frequencias, palavras_sem_repetir = frequenciaComPalavrasSemRepetir(textoLimpoDeStopwords)
+    maiorFrequencia = 1
+    moda = []
+    for i in range(len(Frequencias)):
+        if Frequencias[i] > maiorFrequencia:
+            maiorFrequencia = Frequencias[i]
+    for i in range(len(Frequencias)):
+        if Frequencias[i] == maiorFrequencia:
+            moda.append(palavras_sem_repetir[i])
+    return moda, maiorFrequencia
+def HapaxesLegomenons(textoLimpoDeStopwords):
+    Frequencias, palavras_sem_repetir = frequenciaComPalavrasSemRepetir(textoLimpoDeStopwords)
+    HapaxesLegomenons = []
+    for i in range(len(Frequencias)):
+        if Frequencias[i] == 1:
+            HapaxesLegomenons.append(palavras_sem_repetir[i])
+    return HapaxesLegomenons
 #def voltarAoMenu():
     print("Voltar ao menu ?")
     print("1-Sim")
@@ -105,10 +135,21 @@ def main ():
                         print("------------------------------")
                 case 3:
                     #Gerar e imprimir as palavras mais frequentes
-                    print("")
+                    try:
+                        moda, maiorFrequencia = Moda(textoLimpoDeStopwords)
+                        print(f"Palavras mais frequentes: {moda}")
+                        print(f"Se repetiu: {maiorFrequencia} vezes")
+                    except UnboundLocalError:
+                        print("Primeiro retire as stopwords do texto!")
+                        print("------------------------------")
                 case 4:
                     #Gerar e imprimir os Hapaxes Legomenons (palavras de frequência única)"
-                    print("")
+                    try:
+                        unicaRepeticao = HapaxesLegomenons(textoLimpoDeStopwords)
+                        print(f"Os Hapaxes Legomenons são: {unicaRepeticao}")
+                    except UnboundLocalError:
+                        print("Primeiro retire as stopwords do texto!")
+                        print("------------------------------")
                 case 5:
                     print("")
                 case 6:
