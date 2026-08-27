@@ -67,8 +67,13 @@ def maiorFrequencia(textoLimpoDeStopwords):
     return maiorFrequencia
 
 def HapaxesLegomenons(texto):
-    Frequencias, palavras_sem_repetir = frequenciaComPalavrasSemRepetir(texto)
+    auxRepeticao = []
+    for i in range(len(texto)):
+        auxRepeticao.append(texto[i].lower())
+
+    Frequencias, palavras_sem_repetir = frequenciaComPalavrasSemRepetir(auxRepeticao)
     HapaxesLegomenons = []
+
     for i in range(len(Frequencias)):
         if Frequencias[i] == 1:
             HapaxesLegomenons.append(palavras_sem_repetir[i])
@@ -108,9 +113,10 @@ def topK(frequencia, palavras_sem_repetir, k, graphBool):
     return ranking
 
 
-def grafico(frequencia, ranking):
-    
-
+def grafico(frequencia,textoLimpo):
+    a, stopwords = removeStopwords(textoLimpo, stopwordsBruto)
+    b, stopwordsSemRep = frequenciaComPalavrasSemRepetir(stopwords)
+    hapaxesGraph = HapaxesLegomenons(textoLimpo)
     x = []
     for i in range(len(frequencia)):
         x.append(i)
@@ -122,11 +128,14 @@ def grafico(frequencia, ranking):
     plt.xlabel('Ranking')
     plt.ylabel('Frequência')
     plt.legend()
-    plt.grid(True)
+    print(len(stopwordsSemRep))
+
+    plt.axvline(x=len(hapaxesGraph), color='red', linestyle=':', linewidth=2, label='Corte Inferior')
+    plt.axvline(x=len(stopwordsSemRep), color='green', linestyle=':', linewidth=2, label='Corte Superior')
+    
  
     # Mostrar o gráfico
     plt.show()
-    #plt.axvline(x=corte_superior, color='orange', linestyle=':', linewidth=2, label='Corte Superior')
     #plt.axvline(x=corte_inferior, color='green', linestyle=':', linewidth=2, label='Corte Inferior')
 def main ():
     #opções do Menu
@@ -186,14 +195,15 @@ def main ():
                         except ValueError:
                             print("Escolha um valor válido de colocação")
                             
-                        auxRepeticao = []
-                        for i in range(len(textoLimpoDeStopwords)):
-                            auxRepeticao.append(textoLimpoDeStopwords[i].lower())
+        
 
                         frequencia = []
                         palavras_sem_repetir = []   
                         if (controlStop == 1):
-                            frequencia, palavras_sem_repetir = frequenciaComPalavrasSemRepetir(auxRepeticao) #semStopwords
+                            auxRepeticao = []
+                            for i in range(len(textoLimpoDeStopwords)):
+                                auxRepeticao.append(textoLimpoDeStopwords[i].lower())
+                            frequencia, palavras_sem_repetir = frequenciaComPalavrasSemRepetir(auxRepeticao) #semStopwords            
                         else:
                             frequencia, palavras_sem_repetir = frequenciaComPalavrasSemRepetir(textoLimpo)  #comStopwords
 
@@ -223,7 +233,7 @@ def main ():
                         graphBool = 1
                         k = 1
                         ranking = topK(frequencia, palavras_sem_repetir, k, graphBool)
-                        grafico(frequencia, ranking)
+                        grafico(frequencia, textoLimpo)
                     except UnboundLocalError:
                         print("Realize primeiro a leitura do arquivo TXT para ter acesso aos dados!")
                         print("------------------------------")
