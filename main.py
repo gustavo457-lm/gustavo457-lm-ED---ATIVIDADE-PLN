@@ -90,21 +90,34 @@ def main ():
             print("------------------------------")
             match option:
                 case 1:
-                    pasta = input("Digite o caminho da pasta: ")
-                    arquivoTXT = input("Digite o nome do arquivo TXT: ")
-                    # Localiza a pasta onde o main.py está salvo
                     pastaAtual = Path(__file__).parent
-                    caminhoPasta = Path(pasta)
-                    caminhoArquivo1 = caminhoPasta / arquivoTXT
-                    if not caminhoPasta.is_dir():
-                        print("Pasta não encontrada!")
+                    escolha = 0
+                    while(escolha != 1 and escolha != 2):
+                        print("1 - Acessar arquivo TXT na pasta do programa")
+                        print("2 - Acessar arquivo TXT de qualquer pasta do computador")
+                        escolha = int(input("Escolha uma das opções para a leitura do texto ser realizada: "))
                         print("------------------------------")
-                        continue
+                        if escolha == 1: 
+                            arquivoTXT = input("Digite o nome do arquivo TXT: ")
+                            caminhoArquivo1 = pastaAtual / arquivoTXT
 
+                        elif escolha == 2:
+                            pasta = input("Digite o caminho da pasta: ")
+                            arquivoTXT = input("Digite o nome do arquivo TXT: ")
+                            # Localiza a pasta onde o main.py está salvo
+                            caminhoPasta = Path(pasta)
+                            caminhoArquivo1 = caminhoPasta / arquivoTXT
+                            if not caminhoPasta.is_dir():
+                                print("Pasta não encontrada!")
+                                print("------------------------------")
+                                continue
+                        else: 
+                            print("Escreva uma opção válida")
                     if not caminhoArquivo1.is_file():
                         print("Arquivo não encontrado!")
                         print("------------------------------")
                         continue
+
                     caminhoArquivo2 = pastaAtual / "stopwords-pt.txt"
 
                     with open(caminhoArquivo1, "r", encoding="utf-8") as arquivo:
